@@ -13,6 +13,9 @@
 #ifndef RANDOMACESSITERATOR_HPP
 # define RANDOMACESSITERATOR_HPP
 
+# include <cstddef>
+# include <iterator>
+
 namespace ft
 {
 
@@ -20,10 +23,10 @@ namespace ft
     class RandomAcessIterator
     {
         public:
-            typedef Vector::value_type   value_type;
-            typedef value_type*          pointer_type;
-            typedef value_type&          reference_type;
-            typedef std::ptrdiff_t      difference_type;
+            typedef typename Vector::value_type     value_type;
+            typedef value_type*                     pointer_type;
+            typedef value_type&                     reference_type;
+            typedef std::ptrdiff_t                  difference_type;
         
         private:
             pointer_type _ptr;    
