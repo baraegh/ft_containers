@@ -13,8 +13,10 @@
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 
-# include "Iterator.hpp"
+# include "RandomAcessIterator.hpp"
 # include <iostream>
+# include <memory>
+# include <vector>
 
 namespace ft
 {
@@ -22,14 +24,18 @@ namespace ft
     class Vector
     {
         private:
-            typedef T                               value_type;
-            typedef Alloc                           allocator_type;
-            typedef allocator_type::reference       reference;
-            typedef allocator_type::const_reference	const_reference;
-            typedef allocator_type::pointer         pointer;
-            typedef allocator_type::const_pointer   const_pointer;
-            /* add iterators */
-            
+            typedef T                                           value_type;
+            typedef Alloc                                       allocator_type;
+            typedef typename allocator_type::reference          reference;
+            typedef typename allocator_type::const_reference    const_reference;
+            typedef typename allocator_type::pointer            pointer;
+            typedef typename allocator_type::const_pointer      const_pointer;
+            typedef ft::RandomAcessIterator<value_type>         iterator;
+            typedef ft::RandomAcessIterator<const value_type>   const_iterator;
+            // typedef ft::ReverseIterator::<iterator>          reverse_iterator;
+            // typedef ft::ReverseIterator::<const_iterator>    const_reverse_iterator;              
+            typedef std::ptrdiff_t                              difference_type;
+            typedef size_t                                      size_type;
             
 
         public:
