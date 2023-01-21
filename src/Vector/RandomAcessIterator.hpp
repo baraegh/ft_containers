@@ -19,72 +19,75 @@
 namespace ft
 {
 
-    template <typename Vector>
-    class RandomAcessIterator
+    template <typename T>
+    class random_acess_iterator : public std::random_access_iterator_tag
     {
         public:
-            typedef typename Vector::value_type     value_type;
-            typedef value_type*                     pointer_type;
-            typedef value_type&                     reference_type;
-            typedef std::ptrdiff_t                  difference_type;
+            typedef T      value_type;
+            typedef T*      pointer_type;
+            typedef T&     reference_type;
+            typedef std::ptrdiff_t  difference_type;
         
         private:
             pointer_type _ptr;    
         
         public:
-            RandomAcessIterator() :_ptr(NULL) {}
+            random_acess_iterator(pointer_type ptr) :_ptr(ptr) {}
             
-            RandomAcessIterator(pointer_type ptr) :_ptr(ptr) {}
+            random_acess_iterator() :_ptr(NULL) {}
             
-            RandomAcessIterator(RandomAcessIterator const &it)
+            random_acess_iterator(random_acess_iterator const &it)
             {
                 *this = it;    
             }
             
-            ~RandomAcessIterator(){}
+            ~random_acess_iterator(){}
 
-            RandomAcessIterator &operator=(RandomAcessIterator const & it)
+            random_acess_iterator &operator=(random_acess_iterator const & it)
             {
-                if (it.ptr)
+                if (it._ptr)
                     _ptr = it._ptr;
                 return *this;
             }
 
             /**/
-
-            RandomAcessIterator &operator++(void)
+            // pre-increment ++it
+            random_acess_iterator &operator++(void)
             {
                 ++_ptr;
                 return *this;
             }
             
-            RandomAcessIterator operator++(int) const
+            // post-increment it++
+            random_acess_iterator operator++(int)
             {
-                RandomAcessIterator tmpIt = *this;
+                random_acess_iterator tmpIt = *this;
                 ++(*this);
                 return tmpIt;
             }
 
-            RandomAcessIterator &operator--(void)
+            // pre-increment --it
+            random_acess_iterator &operator--(void)
             {
                 --_ptr;
                 return *this;
             }
             
-            RandomAcessIterator operator--(int) const
+            // post-increment it--
+            random_acess_iterator operator--(int)
             {
-                RandomAcessIterator tmpIt = *this;
+                random_acess_iterator tmpIt = *this;
                 --(*this);
                 return tmpIt;
             }
             
             /**/
-            bool    operator==(RandomAcessIterator const & it)
+            bool    operator==(random_acess_iterator const & it)
             {
                 return  _ptr == it._ptr;
             }
 
-            bool    operator!=(RandomAcessIterator const & it)
+            bool    operator!=(random_acess_iterator const & it)
             {
                 return  _ptr != it._ptr;
             }
@@ -101,56 +104,56 @@ namespace ft
             }
 
             /* */
-            RandomAcessIterator operator+(int n) const
+            random_acess_iterator operator+(difference_type n) const
             {
-                RandomAcessIterator tmpIt = *this;
+                random_acess_iterator tmpIt = *this;
                 
                 tmpIt._ptr += n; 
                 return tmpIt;
             }
 
-            RandomAcessIterator operator-(int n) const
+            random_acess_iterator operator-(difference_type n) const
             {
-                RandomAcessIterator tmpIt = *this;
+                random_acess_iterator tmpIt = *this;
                 
                 tmpIt._ptr -= n; 
                 return tmpIt;
             }
             
-            difference_type  operator-(RandomAcessIterator const & it) const
+            difference_type  operator-(random_acess_iterator const & it) const
             {
-                return std::distance(*this, it);
+                return std::distance(it._ptr, _ptr);
             }
 
             /**/
-            bool    operator<(RandomAcessIterator const & it) const
+            bool    operator<(random_acess_iterator const & it) const
             {
-                return *this < it;
+                return _ptr < it._ptr;
             }
 
-            bool    operator>(RandomAcessIterator const & it) const
+            bool    operator>(random_acess_iterator const & it) const
             {
-                return *this > it;
+                return _ptr > it._ptr;
             }
 
-            bool    operator<=(RandomAcessIterator const & it) const
+            bool    operator<=(random_acess_iterator const & it) const
             {
-                return *this <= it;
+                return _ptr <= it._ptr;
             }
 
-            bool    operator>=(RandomAcessIterator const & it) const
+            bool    operator>=(random_acess_iterator const & it) const
             {
-                return *this >= it;
+                return _ptr >= it._ptr;
             }
             
             /**/
-            RandomAcessIterator & operator+=(difference_type n)
+            random_acess_iterator & operator+=(difference_type n)
             {
                 _ptr = _ptr + n;
                 return *this;
             }
 
-            RandomAcessIterator & operator-=(difference_type n)
+            random_acess_iterator & operator-=(difference_type n)
             {
                 _ptr = _ptr - n;
                 return *this;
