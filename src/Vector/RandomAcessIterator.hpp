@@ -23,9 +23,9 @@ namespace ft
     class random_acess_iterator : public std::random_access_iterator_tag
     {
         public:
-            typedef T      value_type;
-            typedef T*      pointer_type;
-            typedef T&     reference_type;
+            typedef T               value_type;
+            typedef T*              pointer_type;
+            typedef T&              reference_type;
             typedef std::ptrdiff_t  difference_type;
         
         private:
@@ -50,7 +50,7 @@ namespace ft
                 return *this;
             }
 
-            /**/
+            /* operators overload */
             // pre-increment ++it
             random_acess_iterator &operator++(void)
             {
@@ -81,7 +81,6 @@ namespace ft
                 return tmpIt;
             }
             
-            /**/
             bool    operator==(random_acess_iterator const & it)
             {
                 return  _ptr == it._ptr;
@@ -92,7 +91,6 @@ namespace ft
                 return  _ptr != it._ptr;
             }
             
-            /**/
             reference_type   operator*() const
             {
                 return *(_ptr);
@@ -103,7 +101,6 @@ namespace ft
                 return _ptr;
             }
 
-            /* */
             random_acess_iterator operator+(difference_type n) const
             {
                 random_acess_iterator tmpIt = *this;
@@ -125,7 +122,6 @@ namespace ft
                 return std::distance(it._ptr, _ptr);
             }
 
-            /**/
             bool    operator<(random_acess_iterator const & it) const
             {
                 return _ptr < it._ptr;
@@ -146,7 +142,6 @@ namespace ft
                 return _ptr >= it._ptr;
             }
             
-            /**/
             random_acess_iterator & operator+=(difference_type n)
             {
                 _ptr = _ptr + n;
