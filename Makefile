@@ -2,7 +2,7 @@ SRC	= main.cpp
 
 NAME = container
 
-FLAGS = -Wall -Wextra -Werror #-std=c++98 -fsanitize=address
+FLAGS = -Wall -Wextra -Werror -std=c++98 -fsanitize=address
 
 all: ${NAME}
 
