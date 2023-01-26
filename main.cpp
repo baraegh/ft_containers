@@ -151,11 +151,94 @@ int main(void)
     // // set some values (from 1 to 10)
     // for (int i = 1; i <= 10; i++) myvector.push_back(i);
 
-    // // erase the 6th element
+    // // // erase the 6th element
     // myvector.erase (myvector.begin() + 5);
 
     // // erase the first 3 elements:
-    // // myvector.erase (myvector.begin(),myvector.begin()+3);
+    // myvector.erase (myvector.begin() + 2, myvector.begin() + 4);
+
+    // std::cout << "myvector contains:";
+    // for (unsigned i = 0; i < myvector.size(); i++)
+    //     std::cout << ' ' << myvector[i];
+    // std::cout << '\n';
+
+    /* vector::front */
+    // std::vector<int> myvector;
+
+    // myvector.push_back(78);
+    // myvector.push_back(16);
+
+    // now front equals 78, and back 16
+
+    // myvector.front() -= myvector.back();
+
+    // std::cout << "myvector.front() is now " << myvector.front() << '\n';
+
+
+    /* inserting into a vector */
+    // ft::vector<int> myvector (3, 100);
+    // ft::vector<int>::iterator it;
+
+    // it = myvector.begin();
+    // it = myvector.insert(it, 200);
+
+    // // myvector.push_back(1);
+    // myvector.insert(it, 2, 300);
+    // // std::cout << *it << '\n';
+
+    // // "it" no longer valid, get a new one:
+    // it = myvector.begin();
+
+    // ft::vector<int> anothervector(2, 400);
+    // myvector.insert(it + 2, anothervector.begin(), anothervector.end());
+
+    // int myarray[] = {501, 502, 503};
+    // myvector.insert(myvector.begin(), myarray, myarray + 3);
+
+    // std::cout << "myvector contains:";
+    // for (it = myvector.begin(); it < myvector.end(); it++)
+    //     std::cout << ' ' << *it;
+    // std::cout << '\n';
+
+    
+    /* vector::reserve */
+    // ft::vector<int>::size_type sz;
+
+    // ft::vector<int> foo;
+    // sz = foo.capacity();
+    // std::cout << "making foo grow:\n";
+    // for (int i = 0; i < 100; ++i) {
+    //     foo.push_back(i);
+    //     if (sz != foo.capacity())
+    //     {
+    //         sz = foo.capacity();
+    //         std::cout << "capacity changed: " << sz << '\n';
+    //     }
+    // }
+
+    // ft::vector<int> bar;
+    // sz = bar.capacity();
+    // bar.reserve(100);   // this is the only difference with foo above
+    // std::cout << "making bar grow:\n";
+    // for (int i = 0; i < 100; ++i) {
+    //     bar.push_back(i);
+    //     if (sz != bar.capacity())
+    //     {
+    //         sz = bar.capacity();
+    //         std::cout << "capacity changed: " << sz << '\n';
+    //     }
+    // }
+
+
+    /* resizing vector */
+    // ft::vector<int> myvector;
+
+    // // set some initial content:
+    // for (int i = 1; i < 10; i++) myvector.push_back(i);
+
+    // myvector.resize(5);
+    // myvector.resize(8, 100);
+    // myvector.resize(12);
 
     // std::cout << "myvector contains:";
     // for (unsigned i = 0; i < myvector.size(); i++)
