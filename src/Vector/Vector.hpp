@@ -16,6 +16,7 @@
 # include "RandomAcessIterator.hpp"
 # include "../traits_type/enable_if.hpp"
 # include "../traits_type/is_integral.hpp"
+# include <cstring>
 # include <iostream>
 # include <memory>
 # include <stdexcept> 
@@ -45,7 +46,6 @@ namespace ft
         private:
             size_type       _size;
             size_type       _capacity;
-            size_type       _max_size;
             allocator_type  _allocator;
             pointer         _data;
             
@@ -168,20 +168,12 @@ namespace ft
 
             void push_back(const value_type& val)
             {
-                if (_size == _capacity)
-                {
-                    // I should find the right size of the new_data
-                    pointer new_data = _allocator.allocate(_capacity + 1);
-                    for (size_type i = 0; i < _size; i++)
-                        new_data[i] = _data[i];
-                    for (size_type i = 0; i < _size; i++)
-                        _allocator.destroy(_data + i);
-                    _allocator.deallocate(_data, _size);
-                    _data = new_data;
-                }
+                if (_size == 0)
+                    reserve(_size + 1);
+                else if (_size == _capacity)
+                    reserve(_capacity * 2);
+                _allocator.construct(_data + _size, val);
                 _size++;
-                _capacity++;
-                _allocator.construct(_data + _size - 1, val);
             }
 
             allocator_type get_allocator() const
@@ -198,6 +190,11 @@ namespace ft
             {
                 return _size;
             }
+            
+            // size_type max_size() const
+            // {
+            //     return (2^64)/sizeof(value_type) - 1;
+            // }
 
             void clear()
             {
@@ -213,27 +210,159 @@ namespace ft
                 return false;
             }
 
-            // iterator erase(iterator position)
-            // {
-            //     iterator    first = this->begin();
-            //     iterator    last = this->end();
-            //     size_type   i = 0;
+            iterator erase(iterator position)
+            {
+                iterator    first = this->begin();
+                size_type   index =  position - first;
+                pointer   tmp_data = _allocator.allocate(_capacity);
+                
+                memcpy( tmp_data, _data,
+                        index * sizeof(size_type));
 
-            //     for (; first != last; first++)
-            //     {
-            //         if (first == last)
-            //             break;
-            //         i++;
-            //     }
+                memcpy( tmp_data + index,
+                        _data + index + 1,
+                        (_size - (index + 1)) * sizeof(size_type));
+                _allocator.deallocate(_data, _size);
+                _data = tmp_data;
+                _size--;
+                return _data + index;
+            }
 
-            //     this->assign(j + 1,)
+            iterator erase(iterator first, iterator last)
+            {
+                size_type   index = first - this->begin();
+                size_type   distance = this->end() - last;
+                pointer     tmp_data = _allocator.allocate(_capacity); 
 
-            // }
+                if (index == 0)
+                    memcpy( tmp_data,
+                            _data + (_size - distance),
+                            distance * sizeof(size_type));
+                else
+                {
+                    memcpy( tmp_data, _data,
+                            (index - 1) * sizeof(size_type));
 
-            // iterator erase(iterator first, iterator last)
-            // {
+                    memcpy( tmp_data + index,
+                            _data + (index + (last - first)),
+                            (last - first + 1) * sizeof(size_type));
+                }
+                _allocator.deallocate(_data, _size);
+                _data = tmp_data;
+                _size -= (last - first);
+                return _data + index;
+            }
 
-            // }
+            reference front()
+            {
+                return _data[0];
+            }
+            
+            const_reference front() const
+            {
+                return _data[0];
+            }
+
+            iterator insert(iterator position, const value_type& val)
+            {
+                size_type   index = position - this->begin();
+                pointer     tmp_data;
+
+                if (_size == _capacity)
+                    _capacity++;
+                tmp_data = _allocator.allocate(_capacity);
+                memcpy(tmp_data, _data, index * sizeof(value_type));
+                tmp_data[index] = val;
+                memcpy( tmp_data + index + 1,
+                        _data + index,
+                        (_size - index) * sizeof(value_type));
+                _allocator.deallocate(_data, _size);
+                _data = tmp_data;
+                _size++;
+                return _data + index;
+            }
+
+            void insert(iterator position, size_type n, const value_type& val)
+            {
+                
+                size_type   index = position - this->begin();
+                pointer     tmp_data;
+                size_type   tmp_size;
+
+                if (_size + n - 1 >= _capacity)
+                {
+                    tmp_size = n - (_capacity - _size);
+                    _capacity += tmp_size;
+                }
+                tmp_data = _allocator.allocate(_capacity);
+                memcpy(tmp_data, _data, index * sizeof(value_type));
+                for (size_type i = index; i < n + index; i++)
+                    tmp_data[i] = val;
+                memcpy( tmp_data + index + n,
+                        _data + index,
+                        (_size - index) * sizeof(value_type));
+                _allocator.deallocate(_data, _size);
+                _data = tmp_data;
+                _size += n;
+            }
+
+            template <class InputIterator>
+                void insert(iterator position, InputIterator first, InputIterator last,
+                             typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = 0)
+            {
+                size_type   size = last - first;
+                size_type   index = position - this->begin();
+                size_type   tmp_size;
+                pointer     tmp_data;
+
+                if (_size + size - 1 >= _capacity)
+                {
+                    tmp_size = size - (_capacity - _size);
+                    _capacity += tmp_size;
+                }
+                tmp_data = _allocator.allocate(_capacity);
+                memcpy(tmp_data, _data, index * sizeof(value_type));
+                for (size_type i = index; first != last; first++)
+                    tmp_data[i++] = *first;
+                memcpy( tmp_data + index + size,
+                        _data + index,
+                        (_size - index) * sizeof(value_type));
+                _allocator.deallocate(_data, _size);
+                _data = tmp_data;
+                _size += size;
+            }
+
+            void reserve(size_type n)
+            {
+                // if (n > this->max_size())
+                //     throw std::length_error("size requested is greater than the  max_size");
+                if (n > _capacity)
+                {
+                    pointer tmp_data = _allocator.allocate(n);
+                    memcpy( tmp_data, _data,
+                            _size * sizeof(value_type));
+                    _allocator.deallocate(_data, _capacity);
+                    _data = tmp_data;
+                    _capacity = n;
+                }
+            }
+
+            void resize(size_type n, value_type val = value_type())
+            {
+                reserve(n);
+                if (n > _size)
+                {
+                    for (size_type i = _size; i < n; i++)
+                        _allocator.construct(_data + i, val);
+                }
+                else if (n < _size)
+                {
+                    for (size_type i = 0; i < _size; i++)
+                        if (i >= n)
+                            _allocator.destroy(_data + i);
+                }
+                _size = n;
+            }
 
             /* operators overloads */
             vector  &operator=(vector const & x)
