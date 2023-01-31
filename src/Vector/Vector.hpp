@@ -13,7 +13,8 @@
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 
-# include "RandomAcessIterator.hpp"
+# include "RandomAccessIterator.hpp"
+# include "ReverseIterator.hpp"
 # include "../traits_type/enable_if.hpp"
 # include "../traits_type/is_integral.hpp"
 # include <cstring>
@@ -28,19 +29,18 @@ namespace ft
     class vector
     {
         public:
-            typedef T                                           value_type;
-            typedef Alloc                                       allocator_type;
-            typedef typename allocator_type::reference          reference;
-            typedef typename allocator_type::const_reference    const_reference;
-            typedef typename allocator_type::pointer            pointer;
-            typedef typename allocator_type::const_pointer      const_pointer;
-            typedef ft::random_acess_iterator<value_type>       iterator;
-            typedef ft::random_acess_iterator<const value_type> const_iterator;
-            //to be replaced with ft:reverse_iterator..
-            // typedef std::reverse_iterator<iterator>             reverse_iterator;
-            // typedef std::reverse_iterator<const_iterator>       const_reverse_iterator;              
-            typedef std::ptrdiff_t                              difference_type;
-            typedef size_t                                      size_type;
+            typedef T                                                           value_type;
+            typedef Alloc                                                       allocator_type;
+            typedef typename allocator_type::reference                          reference;
+            typedef typename allocator_type::const_reference                    const_reference;
+            typedef typename allocator_type::pointer                            pointer;
+            typedef typename allocator_type::const_pointer                      const_pointer;
+            typedef ft::random_access_iterator<value_type>                      iterator;
+            typedef ft::random_access_iterator<const value_type>                const_iterator;
+            typedef ft::reverse_iterator<iterator>                              reverse_iterator;
+            typedef ft::reverse_iterator<const_iterator>                        const_reverse_iterator;              
+            typedef typename ft::iterator_traits<iterator>::difference_type     difference_type;
+            typedef typename allocator_type::size_type                          size_type;
             
 
         private:
@@ -362,6 +362,38 @@ namespace ft
                             _allocator.destroy(_data + i);
                 }
                 _size = n;
+            }
+
+            void swap(vector& x)
+            {
+                std::swap(_data, x._data);
+                std::swap(_size, x._size);
+                std::swap(_capacity, x._capacity);
+                std::swap(_allocator, x._allocator);
+            }
+
+            reverse_iterator rbegin()
+            {
+                return reverse_iterator(_data + _size);
+            }
+
+            // const_reverse_iterator rbegin() const
+            // {
+
+            // }
+
+            reverse_iterator rend()
+            {
+                return reverse_iterator(_data);
+            }
+
+            // const_reverse_iterator rend() const
+            // {
+
+            // }
+
+            operator iterator<const value_type>() {
+                return iterator<const value_type>(_data);
             }
 
             /* operators overloads */
