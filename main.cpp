@@ -245,5 +245,45 @@ int main(void)
     //     std::cout << ' ' << myvector[i];
     // std::cout << '\n';
 
+
+    /* swap vectors */
+    // ft::vector<int> foo (3,100);   // three ints with a value of 100
+    // ft::vector<int> bar (5,200);   // five ints with a value of 200
+
+    // foo.swap(bar);
+
+    // std::cout << "foo contains:";
+    // for (unsigned i=0; i<foo.size(); i++)
+    //     std::cout << ' ' << foo[i];
+    // std::cout << '\n';
+
+    // std::cout << "bar contains:";
+    // for (unsigned i=0; i<bar.size(); i++)
+    //     std::cout << ' ' << bar[i];
+    // std::cout << '\n';
+
+
+    /* vector::rbegin/rend */ 
+    // ft::vector<int> myvector (5);  // 5 default-constructed ints
+
+    // int i=0;
+
+    // ft::vector<int>::reverse_iterator rit = myvector.rbegin();
+    // for (; rit!= myvector.rend(); ++rit)
+    //     *rit = ++i;
+
+    // std::cout << "myvector contains:";
+    // for (ft::vector<int>::iterator it = myvector.begin(); it != myvector.end(); ++it)
+    //     std::cout << ' ' << *it;
+    // std::cout << '\n';
+
+    ft::vector<int> my_v(3, 4);
+    ft::vector<int>::iterator my_it, my_it1, tmp;
+    my_it = my_v.begin();
+    my_it1 = my_v.begin() + 1;
+
+    ft::vector<int>::const_iterator c_ob(my_it);
+    // c_it = my_it;
+
     return 0;
 }
