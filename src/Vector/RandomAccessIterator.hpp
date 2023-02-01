@@ -6,7 +6,7 @@
 /*   By: eel-ghan <eel-ghan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 17:11:38 by eel-ghan          #+#    #+#             */
-/*   Updated: 2023/01/18 23:24:11 by eel-ghan         ###   ########.fr       */
+/*   Updated: 2023/01/31 23:18:41 by eel-ghan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,13 @@ namespace ft
     class random_access_iterator : public std::random_access_iterator_tag
     {
         public:
-            typedef T                               value_type;
-            typedef T*                              pointer;
-            typedef const T*                        const_pointer;
-            typedef T&                              reference;
-            typedef const T&                        const_reference;
-            typedef std::ptrdiff_t                  difference_type;
-            typedef std::random_access_iterator_tag iterator_category;
+            typedef T                                           value_type;
+            typedef T*                                          pointer;
+            typedef const T*                                    const_pointer;
+            typedef T&                                          reference;
+            typedef const T&                                    const_reference;
+            typedef std::ptrdiff_t                              difference_type;
+            typedef std::random_access_iterator_tag             iterator_category;
         
         private:
             pointer _ptr;    
@@ -39,17 +39,21 @@ namespace ft
             
             random_access_iterator() :_ptr(NULL) {}
             
-            random_access_iterator(random_access_iterator const &it)
+            random_access_iterator(const random_access_iterator  &it)
                 :_ptr(it._ptr) {}
             
             ~random_access_iterator(){}
 
-            random_access_iterator &operator=(random_access_iterator const &it)
+            random_access_iterator &operator=(const random_access_iterator  &it)
             {
                 if (this == &it)
                     return *this;
                 _ptr = it._ptr;
                 return *this;
+            }
+
+            operator random_access_iterator<const value_type>() {
+                return random_access_iterator<const value_type>(_ptr);
             }
 
             /* operators overload */
@@ -109,6 +113,13 @@ namespace ft
                 
                 tmpIt._ptr += n; 
                 return tmpIt;
+            }
+
+            template <typename T1>
+            friend ft::random_access_iterator<T1> operator+(typename ft::random_access_iterator<T1>::difference_type n,
+                ft::random_access_iterator<T1> const & it)
+            {
+                return it + n;
             }
 
             random_access_iterator operator-(difference_type n) const

@@ -6,7 +6,7 @@
 /*   By: eel-ghan <eel-ghan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 17:11:44 by eel-ghan          #+#    #+#             */
-/*   Updated: 2023/01/17 21:58:28 by eel-ghan         ###   ########.fr       */
+/*   Updated: 2023/02/01 03:16:04 by eel-ghan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,12 +52,12 @@ namespace ft
 
         public:
             // default constructor
-            explicit vector (const allocator_type& alloc = allocator_type())
+            explicit vector(const allocator_type& alloc = allocator_type())
                 : _size(0), _capacity(0), _allocator(alloc), _data(_allocator.allocate(_capacity))
             {}
 
             // fill constructor
-            explicit vector (size_type n, const value_type& val = value_type(),
+            explicit vector(size_type n, const value_type& val = value_type(),
                  const allocator_type& alloc = allocator_type())
                  :  _size(n), _capacity(_size),
                     _allocator(alloc), _data(_allocator.allocate(_capacity))
@@ -191,10 +191,10 @@ namespace ft
                 return _size;
             }
             
-            // size_type max_size() const
-            // {
-            //     return (2^64)/sizeof(value_type) - 1;
-            // }
+            size_type max_size() const
+            {
+                return _allocator.max_size();
+            }
 
             void clear()
             {
@@ -377,23 +377,19 @@ namespace ft
                 return reverse_iterator(_data + _size);
             }
 
-            // const_reverse_iterator rbegin() const
-            // {
-
-            // }
+            const_reverse_iterator rbegin() const
+            {
+                return reverse_iterator(_data + _size);
+            }
 
             reverse_iterator rend()
             {
                 return reverse_iterator(_data);
             }
 
-            // const_reverse_iterator rend() const
-            // {
-
-            // }
-
-            operator iterator<const value_type>() {
-                return iterator<const value_type>(_data);
+            const_reverse_iterator rend() const
+            {
+                return reverse_iterator(_data);
             }
 
             /* operators overloads */
@@ -407,12 +403,108 @@ namespace ft
                 
                 return *this;
             }
-
-            value_type  operator[](int i)
+            
+            reference operator[](size_type n)
             {
-                return _data[i];
+                return _data[n];
+            }
+            
+            const_reference operator[](size_type n) const
+            {
+                return _data[n];
             }
     };
+
+    template <class InputIterator1, class InputIterator2>
+        bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2)
+    {
+        while (first1 != last1)
+        {
+            if (!(*first1 == *first2))
+                return false;
+            ++first1; 
+            ++first2;
+        }
+        return true;
+    }
+
+    template <class InputIterator1, class InputIterator2, class BinaryPredicate>
+        bool equal( InputIterator1 first1, InputIterator1 last1,
+                    InputIterator2 first2, BinaryPredicate pred)
+    {
+        while (first1 != last1)
+        {
+            if (!pred(*first1, *first2))
+                return false;
+            ++first1; 
+            ++first2;
+        }
+        return true;
+    }
+
+    template <class InputIterator1, class InputIterator2>
+        bool lexicographical_compare(   InputIterator1 first1, InputIterator1 last1,
+                                        InputIterator2 first2, InputIterator2 last2)
+    {
+        while (first1 != last1)
+        {
+            if (first2 == last2 || *first2 < *first1)
+                return false;
+            else if (*first1 < *first2)
+                return true;
+            ++first1; ++first2;
+        }
+        return (first2 != last2);
+    }
+
+    // template <class InputIterator1, class InputIterator2, class Compare>
+    //     bool lexicographical_compare (  InputIterator1 first1, InputIterator1 last1,
+    //                                     InputIterator2 first2, InputIterator2 last2,
+    //                                     Compare comp)
+    // {
+        
+    // }
+    
+    template <class T, class Alloc>
+        bool operator==(const ft::vector<T,Alloc>& v1, const ft::vector<T,Alloc>& v2)
+    {
+        if (v1.size() == v2.size())
+            return ft::equal(v1.begin(), v1.end(), v2.begin());
+        return false;
+    }
+
+    template <class T, class Alloc>
+        bool operator!=(const ft::vector<T,Alloc>& v1, const ft::vector<T,Alloc>& v2)
+    {
+        return !(v1 == v2);
+    }
+
+    template <class T, class Alloc>
+        bool operator<(const ft::vector<T,Alloc>& v1, const ft::vector<T,Alloc>& v2)
+    {
+        return ft::lexicographical_compare(v1.begin(), v1.end(), v2.begin(), v2.end());
+    }
+    
+    template <class T, class Alloc>
+        bool operator<=(const ft::vector<T,Alloc>& v1, const ft::vector<T,Alloc>& v2)
+    {
+        return !(v2 < v1);
+    }
+
+    template <class T, class Alloc>
+        bool operator>(const ft::vector<T,Alloc>& v1, const ft::vector<T,Alloc>& v2)
+    {
+        return v2 < v1;
+    }
+
+    template <class T, class Alloc>
+        bool operator>=(const ft::vector<T,Alloc>& v1, const ft::vector<T,Alloc>& v2)
+    {
+        return !(v1 < v2);
+    }
+
+//     template <class T, class Alloc>
+//   void swap (vector<T,Alloc>& x, vector<T,Alloc>& y)
 }
 
 
