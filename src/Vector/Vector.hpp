@@ -6,7 +6,7 @@
 /*   By: eel-ghan <eel-ghan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 17:11:44 by eel-ghan          #+#    #+#             */
-/*   Updated: 2023/02/01 03:16:04 by eel-ghan         ###   ########.fr       */
+/*   Updated: 2023/02/01 23:21:35 by eel-ghan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,8 @@ namespace ft
                     _allocator.destroy(_data + i);
                 _allocator.deallocate(_data, _size);
                 _size = n;
-                _capacity = _size;
+                if (_capacity < _size)
+                    _capacity = _size;
                 _data = _allocator.allocate(_capacity);
                 for (size_type i = 0; i < _size; i++)
                     _allocator.construct(_data + i, val);
@@ -266,18 +267,30 @@ namespace ft
             iterator insert(iterator position, const value_type& val)
             {
                 size_type   index = position - this->begin();
-                pointer     tmp_data;
 
-                if (_size == _capacity)
+                if (_size >= _capacity)
+                {
+                    pointer     tmp_data;
+                    
                     _capacity++;
-                tmp_data = _allocator.allocate(_capacity);
-                memcpy(tmp_data, _data, index * sizeof(value_type));
-                tmp_data[index] = val;
-                memcpy( tmp_data + index + 1,
-                        _data + index,
-                        (_size - index) * sizeof(value_type));
-                _allocator.deallocate(_data, _size);
-                _data = tmp_data;
+                    tmp_data = _allocator.allocate(_capacity);
+                    memcpy(tmp_data, _data, index * sizeof(value_type));
+                    _allocator.construct(tmp_data + index, val);
+                    memcpy( tmp_data + index + 1,
+                            _data + index,
+                            (_size - index) * sizeof(value_type));
+                    _allocator.deallocate(_data, _size);
+                    _data = tmp_data;
+                }
+                else
+                {
+                    for (size_type i = _size + 1; i > index; i--)
+                    {
+                        _allocator.construct(_data + i, _data[i - 1]);
+                        _allocator.destroy(_data + i -  1);
+                    }
+                    _allocator.construct(_data + index, val);
+                }
                 _size++;
                 return _data + index;
             }
