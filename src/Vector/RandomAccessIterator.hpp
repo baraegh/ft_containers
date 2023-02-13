@@ -6,7 +6,7 @@
 /*   By: eel-ghan <eel-ghan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 17:11:38 by eel-ghan          #+#    #+#             */
-/*   Updated: 2023/02/03 21:00:06 by eel-ghan         ###   ########.fr       */
+/*   Updated: 2023/02/10 21:56:11 by eel-ghan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,24 +135,28 @@ namespace ft
                 return std::distance(it._ptr, _ptr);
             }
 
-            bool    operator<(random_access_iterator const & it) const
+            template <class T1, class T2>
+            friend bool    operator<(random_access_iterator<T1> const & it1, random_access_iterator<T2> const & it2)
             {
-                return _ptr < it._ptr;
+                return it1._ptr < it2._ptr;
             }
 
-            bool    operator>(random_access_iterator const & it) const
+            template <class T1, class T2>
+            friend bool    operator>(random_access_iterator<T1> const & it1, random_access_iterator<T2> const & it2)
             {
-                return _ptr > it._ptr;
+                return it1._ptr > it2._ptr;
             }
 
-            bool    operator<=(random_access_iterator const & it) const
+            template <class T1, class T2>
+            friend bool    operator<=(random_access_iterator<T1> const & it1, random_access_iterator<T2> const & it2)
             {
-                return _ptr <= it._ptr;
+                return it1._ptr <= it2._ptr;
             }
 
-            bool    operator>=(random_access_iterator const & it) const
+            template <class T1, class T2>
+            friend bool    operator>=(random_access_iterator<T1> const & it1, random_access_iterator<T2> const & it2)
             {
-                return _ptr >= it._ptr;
+                return it1._ptr >= it2._ptr;
             }
             
             random_access_iterator & operator+=(difference_type n)
