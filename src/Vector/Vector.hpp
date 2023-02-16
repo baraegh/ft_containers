@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   vector.hpp                                         :+:      :+:    :+:   */
+/*   Vector.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eel-ghan <eel-ghan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 17:11:44 by eel-ghan          #+#    #+#             */
-/*   Updated: 2023/02/13 21:51:38 by eel-ghan         ###   ########.fr       */
+/*   Updated: 2023/02/15 23:25:15 by eel-ghan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -265,20 +265,20 @@ namespace ft
                 
                 if (diff == 0)
                     return _data; 
-                else
+                tmp_data = _allocator.allocate(_capacity);
+                for (size_type i = 0; i < first_i; i++)
+                    _allocator.construct(tmp_data + i, _data[i]);
+                for (size_type i = first_i; i < _size - diff; i++)
+                    _allocator.construct(tmp_data + i, _data[i + diff]);
+                if (_data)
                 {
-                    tmp_data = _allocator.allocate(_capacity);
-                    for (size_type i = 0; i < first_i; i++)
-                        _allocator.construct(tmp_data + i, _data[i]);
-                    for (size_type i = first_i; i < _size - diff; i++)
-                        _allocator.construct(tmp_data + i, _data[i + diff]);
+                    for (size_type i = 0; i < _size; i++)
+                        _allocator.destroy(_data + i); 
+                    _allocator.deallocate(_data, _capacity);
                 }
-                for (size_type i = 0; i < _size; i++)
-                    _allocator.destroy(_data + i); 
-                _allocator.deallocate(_data, _capacity);
                 _data = tmp_data;
                 _size -= (last - first);
-                return _data + (first - this->begin());
+                return _data + first_i;
             }
 
             reference front()
@@ -337,15 +337,17 @@ namespace ft
             {
                 size_type   index = position - this->begin();
                 pointer     tmp_data;
-                size_type   tmp_size;
+                // size_type   tmp_size;
                 size_type   tmp_capacity = _capacity;
                 
                 if (n == 0)
                     return;
-                else if (_size + n - 1 >= _capacity)
+                else if (_size + n > _capacity)
                 {
-                    tmp_size = n - (_capacity - _size);
-                    tmp_capacity += tmp_size;
+                    if (_capacity < _size + n - 1 && _capacity * 2 >= _size + n - 1)
+                        tmp_capacity = _capacity * 2;
+                    else
+                        tmp_capacity = n + _size;
                     tmp_data = _allocator.allocate(tmp_capacity);
                     for (size_type i = 0; i < index; i++)
                         _allocator.construct(tmp_data + i, _data[i]);
@@ -369,9 +371,12 @@ namespace ft
                     iterator it = this->end();
                     for (size_type i = 0; i < n; i++)
                         _allocator.construct(_data + _size + i, val);
-                    while (position != it)
-                        *(it--) = *(it - 1);
-                     for (size_type i = 0; i < n; i++)
+                    while (it != position - 1)
+                    {
+                        *(it + n) = *it;
+                        it--;
+                    }
+                    for (size_type i = 0; i < n; i++)
                         *(position  + i) = val;
                 }
                 _capacity = tmp_capacity;
@@ -387,30 +392,44 @@ namespace ft
 
                 if (!is_input< typename iterator_traits<InputIterator>::iterator_category>::value)
                 {
-                    difference_type   diff = std::distance(first, last);
-                    size_type   tmp_size;
+                    size_type   diff = std::distance(first, last);
                     pointer     tmp_data;
                     size_type   tmp_capacity = _capacity;
 
-                    if (_size + diff - 1 >= tmp_capacity)
+                    if (_size + diff > tmp_capacity)
                     {
-                        tmp_size = diff - (tmp_capacity - _size);
-                        tmp_capacity += tmp_size;
+                       if (_capacity < _size + diff - 1 && _capacity * 2 >= _size + diff - 1)
+                            tmp_capacity = _capacity * 2;
+                        else
+                            tmp_capacity = diff + _size;
+                        tmp_data = _allocator.allocate(tmp_capacity);
+                        for (size_type i = 0; i < index; i++)
+                            _allocator.construct(tmp_data + i, _data[i]);
+                        for (size_type i = index; first != last; first++)
+                            _allocator.construct(tmp_data + i++, *first);
+                        for (size_type i = index + diff; i < _size + diff; i++)
+                            _allocator.construct(tmp_data + i, _data[i - diff]);
+                        if (_data)
+                        {
+                            for (size_type i = 0; i < _size; i++)
+                                _allocator.destroy(_data + i);
+                            _allocator.deallocate(_data, _capacity);
+                        }
+                        _data = tmp_data;
                     }
-                    tmp_data = _allocator.allocate(tmp_capacity);
-                    for (size_type i = 0; i < index; i++)
-                        _allocator.construct(tmp_data + i, _data[i]);
-                    for (size_type i = index; first != last; first++)
-                        _allocator.construct(tmp_data + i++, *first);
-                    for (size_type i = index + diff; i < _size + diff; i++)
-                        _allocator.construct(tmp_data + i, _data[i - diff]);
-                    if (_data)
+                    else
                     {
-                        for (size_type i = 0; i < _size; i++)
-                            _allocator.destroy(_data + i);
-                        _allocator.deallocate(_data, _capacity);
+                        iterator it = this->end();
+                        for (size_type i = 0; i < diff; i++)
+                            _allocator.construct(_data + _size + i, *first);
+                        while (it != position - 1)
+                        {
+                            *(it + diff) = *it;
+                            it--;
+                        }
+                        for (size_type i = 0; i < diff; i++)
+                            *(position  + i) = *(first++);
                     }
-                    _data = tmp_data;
                     _capacity = tmp_capacity;
                     _size += diff;
                 }
@@ -418,7 +437,7 @@ namespace ft
                 {
                     vector v;
                     iterator it = this->begin();
-
+                    
                     if (_size == index)
                     {
                         while (it != this->end())
