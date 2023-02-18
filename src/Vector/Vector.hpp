@@ -6,7 +6,7 @@
 /*   By: eel-ghan <eel-ghan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 17:11:44 by eel-ghan          #+#    #+#             */
-/*   Updated: 2023/02/15 23:25:15 by eel-ghan         ###   ########.fr       */
+/*   Updated: 2023/02/18 16:43:18 by eel-ghan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,22 +130,32 @@ namespace ft
             void assign(InputIterator first, InputIterator last,
                          typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = 0)
             {
-                if (_data)
-                {
-                    for (size_type i = 0; i < _size; i++)
-                        _allocator.destroy(_data + i);
-                    _allocator.deallocate(_data, _capacity);
-                }
                 if (!is_input< typename iterator_traits<InputIterator>::iterator_category>::value)
                 {
-                    _size = std::distance(first, last);
+                    size_type   tmp_size = std::distance(first, last);
+                    pointer     tmp_data;
+
+                    tmp_data = _allocator.allocate(tmp_size);
+                    for (size_type i = 0; i < tmp_size; i++)
+                        _allocator.construct(tmp_data + i, *(first++));
+                    if (_data)
+                    {
+                        for (size_type i = 0; i < _size; i++)
+                            _allocator.destroy(_data + i);
+                        _allocator.deallocate(_data, _capacity);
+                    }
+                    _data = tmp_data;
+                    _size = tmp_size;
                     _capacity = _size;
-                    _data = _allocator.allocate(_capacity);
-                    for (size_type i = 0; i < _size; i++)
-                        _allocator.construct(_data + i, *(first++));
                 }
                 else
                 {
+                    if (_data)
+                    {
+                        for (size_type i = 0; i < _size; i++)
+                            _allocator.destroy(_data + i);
+                        _allocator.deallocate(_data, _capacity);
+                    }
                     _size = 0;
                     _capacity = _size;
                     _data = _allocator.allocate(_capacity);
@@ -337,7 +347,6 @@ namespace ft
             {
                 size_type   index = position - this->begin();
                 pointer     tmp_data;
-                // size_type   tmp_size;
                 size_type   tmp_capacity = _capacity;
                 
                 if (n == 0)
@@ -522,7 +531,7 @@ namespace ft
                 return reverse_iterator(_data);
             }
 
-            /* operators overloads */
+            /* rators overloads */
             vector  &operator=(vector const & x)
             {
                 if (_data)
@@ -588,18 +597,11 @@ namespace ft
                 return false;
             else if (*first1 < *first2)
                 return true;
-            ++first1; ++first2;
+            ++first1;
+            ++first2;
         }
         return (first2 != last2);
     }
-
-    // template <class InputIterator1, class InputIterator2, class Compare>
-    //     bool lexicographical_compare (  InputIterator1 first1, InputIterator1 last1,
-    //                                     InputIterator2 first2, InputIterator2 last2,
-    //                                     Compare comp)
-    // {
-        
-    // }
     
     template <class T, class Alloc>
         bool operator==(const ft::vector<T,Alloc>& v1, const ft::vector<T,Alloc>& v2)
